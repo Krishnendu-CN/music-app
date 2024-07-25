@@ -280,7 +280,7 @@ const TopChartsPage = () => {
             <Box sx={{ flexGrow: 1 }}>
               <AudioPlayer
                 ref={audioPlayerRef}
-                autoPlay={true}
+                autoPlay
                 src={currentTrack.preview_url}
                 showSkipControls={false} // Hide the default skip controls
                 showJumpControls={false}

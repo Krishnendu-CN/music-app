@@ -293,6 +293,7 @@ console.log(track);
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }}>
                   <AudioPlayer
+                  autoPlay
                     src={currentTrack.preview_url}
                     showSkipControls={false}
                     showJumpControls={false}
