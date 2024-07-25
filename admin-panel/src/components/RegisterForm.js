@@ -58,7 +58,7 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, role });
+      const response = await axios.post('https://music-app-zhkf.onrender.com/api/auth/register', { name, email, password, role });
       console.log('User registered:', response.data);
       // Optionally: Redirect to login or display success message
     } catch (error) {

@@ -28,7 +28,7 @@ const MusicPage = () => {
   const handleSearch = async () => {
     setSearchPerformed(true); // Indicate that a search has been performed
     try {
-      const response = await axios.get('http://localhost:5000/api/search', {
+      const response = await axios.get('https://music-app-zhkf.onrender.com/api/search', {
         params: { query: searchQuery },
       });
       console.log('Search API Response:', response.data); // Log the API response
@@ -41,7 +41,7 @@ const MusicPage = () => {
   const fetchPlaylists = async () => {
     try {
       const playlistPromises = categories.map(async (category) => {
-        const response = await axios.get(`http://localhost:5000/api/category/${category.id}`);
+        const response = await axios.get(`https://music-app-zhkf.onrender.com/api/category/${category.id}`);
         console.log(`Playlist API Response for ${category.name}:`, response.data); // Log the API response
         return { [category.name]: response.data };
       });
@@ -58,7 +58,7 @@ const MusicPage = () => {
     setCurrentTrack(track);
     // Save the recently played track to localStorage
   try {
-      await axios.post('http://localhost:5000/api/history', {
+      await axios.post('https://music-app-zhkf.onrender.com/api/history', {
         trackId: track.id,
         trackName: track.name,
         artistNames: track.artists.map(artist => artist.name),

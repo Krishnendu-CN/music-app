@@ -20,7 +20,7 @@ const TopChartsPage = () => {
 
   const fetchAccessToken = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/token');
+      const response = await axios.get('https://music-app-zhkf.onrender.com/api/token');
       return response.data.accessToken;
     } catch (error) {
       console.error('Error fetching access token:', error);
@@ -65,7 +65,7 @@ const TopChartsPage = () => {
       audioPlayerRef.current.audio.current.play(); // Play the track
     }
     // try {
-    //   await axios.post('http://localhost:5000/api/history', {
+    //   await axios.post('https://music-app-zhkf.onrender.com/api/history', {
     //     trackId: track.id,
     //     trackName: track.name,
     //     artistNames: track.artists.map(artist => artist.name),

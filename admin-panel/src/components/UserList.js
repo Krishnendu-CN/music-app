@@ -21,7 +21,7 @@ const UserList = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:5000/api/users', {
+      const response = await axios.get('https://music-app-zhkf.onrender.com/api/users', {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
@@ -43,7 +43,7 @@ const UserList = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+      await axios.delete(`https://music-app-zhkf.onrender.com/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }

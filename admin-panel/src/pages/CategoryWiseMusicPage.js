@@ -21,7 +21,7 @@ const CategoryWiseMusicPage = () => {
 
   const fetchCategoryTracks = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/category/${category}`);
+      const response = await axios.get(`https://music-app-zhkf.onrender.com/api/category/${category}`);
       console.log(response.data);
       setTracks(response.data[0].tracks); // Adjust based on actual response structure
     } catch (error) {

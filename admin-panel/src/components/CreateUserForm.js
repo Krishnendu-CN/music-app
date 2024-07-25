@@ -22,7 +22,7 @@ const CreateUserForm = () => {
 
     try {
       const newUser = { name, email, password, role };
-      const response = await axios.post('http://localhost:5000/api/users', newUser, {
+      const response = await axios.post('https://music-app-zhkf.onrender.com/api/users', newUser, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }

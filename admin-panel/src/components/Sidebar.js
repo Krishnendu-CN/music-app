@@ -10,7 +10,7 @@ const Sidebar = ({ logout }) => {
     const fetchUserRole = async () => {
       if (authToken) {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/role', {
+          const response = await fetch('https://music-app-zhkf.onrender.com/api/auth/role', {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },

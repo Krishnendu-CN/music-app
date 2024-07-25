@@ -28,7 +28,7 @@ const SearchPage = () => {
     if (searchQuery) {
       const fetchTracks = async () => {
         try {
-          const response = await axios.get('http://localhost:5000/api/search', {
+          const response = await axios.get('https://music-app-zhkf.onrender.com/api/search', {
             params: { query: searchQuery },
           });
           console.log('Search API Response:', response.data); // Log the API response
@@ -46,7 +46,7 @@ const SearchPage = () => {
     setCurrentTrack(track);
     // Save the recently played track to localStorage
   try {
-      await axios.post('http://localhost:5000/api/history', {
+      await axios.post('https://music-app-zhkf.onrender.com/api/history', {
         trackId: track.id,
         trackName: track.name,
         artistNames: track.artists.map(artist => artist.name),

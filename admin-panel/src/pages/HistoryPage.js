@@ -28,7 +28,7 @@ const HistoryPage = () => {
     // Fetch recently played tracks from the backend
     const fetchHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/history', {
+        const response = await axios.get('https://music-app-zhkf.onrender.com/api/history', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
