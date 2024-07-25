@@ -1,13 +1,7 @@
 # music-app
 
-It looks like the installation process section wasn't populated correctly. Let's fix that and ensure all steps are included clearly.
-
-### Updated `README.md`
-
-```markdown
-# Music App
-
 A music streaming application using the Spotify API. Built with React for the frontend and Express for the backend.
+
 
 ## Table of Contents
 - [Features](#features)
