@@ -7,7 +7,7 @@ import 'react-h5-audio-player/lib/styles.css';
 import { useParams } from 'react-router-dom';
 
 const categories = [
-  { id: 'bollywood', name: '' }
+  { id: 'new-releases', name: '' }
 ];
 
 const truncateText = (text, maxWords) => {

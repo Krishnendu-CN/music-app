@@ -17,7 +17,7 @@ import TopChartsPage from './pages/TopChartsPage';
 import TopPlaylistPage from './pages/TopPlaylistPage';
 import SearchPage from './pages/SearchPage';
 import HistoryPage from './pages/HistoryPage';
-
+import AllCategoriesPage from './pages/AllCategoriesPage';
 
 const drawerWidth = 240;
 
@@ -130,7 +130,7 @@ function App() {
           <Route path="/top-playlists" element={<TopPlaylistPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/history" element={<PrivateRoute authToken={authToken} component={HistoryPage} />} />
-          
+          <Route path="/music/all-cat" element={<AllCategoriesPage />} />
         </Routes>
       </Box>
     </Box>
