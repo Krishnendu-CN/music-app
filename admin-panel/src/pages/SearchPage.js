@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Typography, Card, CardContent, CardMedia, Grid, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import AudioPlayer from 'react-h5-audio-player';
-import 'react-h5-audio-player/lib/styles.css';
+import Player from '../components/Player'; // Ensure you have this component
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentTrack, setTracks } from '../redux/slices/musicSlice';
 
 const truncateText = (text, maxWords) => {
   const words = text.split(' ');
@@ -21,31 +22,37 @@ const useQuery = () => {
 const SearchPage = () => {
   const query = useQuery();
   const searchQuery = query.get('query');
-  const [tracks, setTracks] = useState([]);
-  const [currentTrack, setCurrentTrack] = useState(null);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const [playerVisible, setPlayerVisible] = useState(false);
+  const dispatch = useDispatch();
+  const currentTrack = useSelector((state) => state.music.currentTrack);
+  const tracks = useSelector((state) => state.music.tracks);
+
+  const handleSearch = useCallback(async () => {
+    setSearchPerformed(true); // Indicate that a search has been performed
+    try {
+      const response = await axios.get('https://music-app-zhkf.onrender.com/api/search', {
+        params: { query: searchQuery },
+      });
+      console.log('Search API Response:', response.data); // Log the API response
+      dispatch(setTracks(response.data.tracks.items));
+    } catch (error) {
+      console.error('Error searching tracks:', error);
+    }
+  }, [searchQuery, dispatch]);
 
   useEffect(() => {
     if (searchQuery) {
-      const fetchTracks = async () => {
-        try {
-          const response = await axios.get('https://music-app-zhkf.onrender.com/api/search', {
-            params: { query: searchQuery },
-          });
-          console.log('Search API Response:', response.data); // Log the API response
-          setTracks(response.data.tracks.items);
-        } catch (error) {
-          console.error('Error searching tracks:', error);
-        }
-      };
-
-      fetchTracks();
+      handleSearch();
     }
-  }, [searchQuery]);
+  }, [searchQuery, handleSearch]);
 
   const handlePlay = async (track) => {
-    setCurrentTrack(track);
+    console.log(track);
+    setPlayerVisible(true);
+    dispatch(setCurrentTrack(track));
     // Save the recently played track to localStorage
-  try {
+    try {
       await axios.post('https://music-app-zhkf.onrender.com/api/history', {
         trackId: track.id,
         trackName: track.name,
@@ -113,36 +120,7 @@ const SearchPage = () => {
           </Grid>
         ))}
       </Grid>
-
-      {currentTrack && (
-  <Box sx={{
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 20px',
-    zIndex: 9999 // Increased z-index to ensure it stays in front
-  }}>
-    <img src={currentTrack.album.images[0].url} alt={currentTrack.name} style={{ width: '100px', height: '100px', borderRadius: '8px', marginRight: '10px' }} />
-    <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h6">{currentTrack.name}</Typography>
-      <Typography variant="subtitle1">By: {currentTrack.artists.map(artist_cur => artist_cur.name).join(', ')}</Typography>
-    </Box>
-    <Box sx={{ width: '100%', maxWidth: 600 }}>
-      <AudioPlayer
-        autoPlay
-        src={currentTrack.preview_url}
-        showSkipControls
-        showJumpControls={false}
-        style={{ width: '100%', borderRadius: '8px', backgroundColor: '#fff' }}
-      />
-    </Box>
-  </Box>
-)}
+      
     </Box>
   );
 };

@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Box, Typography, IconButton, Card, CardContent, CardMedia, Grid, Button, CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Card, CardContent, CardMedia, CircularProgress, Grid, IconButton, Typography } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import AudioPlayer from 'react-h5-audio-player';
-import 'react-h5-audio-player/lib/styles.css';
-
-const truncateText = (text, maxWords) => {
-  const words = text.split(' ');
-  return words.length > maxWords ? words.slice(0, maxWords).join(' ') + '...' : text;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { setTracks, setCurrentTrack, setCategories, clearCurrentTrack } from '../redux/slices/musicSlice'; // Adjust the path if necessary
+import Player from '../components/Player';  // Adjust the path if necessary
 
 const TopPlaylistPage = () => {
+  const dispatch = useDispatch();
+  const tracks = useSelector((state) => state.music.tracks);
+  const currentTrack = useSelector((state) => state.music.currentTrack);
+  console.log(currentTrack);
   const [playlists, setPlaylists] = useState([]);
-  const [tracks, setTracks] = useState([]);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
-  const [waveformActive, setWaveformActive] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+ 
+  const [loading, setLoading] = useState(true);
 
   const fetchAccessToken = async () => {
     try {
@@ -47,7 +42,7 @@ const TopPlaylistPage = () => {
     } catch (error) {
       console.error('Error fetching playlists:', error);
     } finally {
-      setLoading(false); // Set loading to false after fetching data
+      setLoading(false);
     }
   };
 
@@ -61,10 +56,8 @@ const TopPlaylistPage = () => {
       const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, { headers });
       if (response.data?.items) {
         const trackList = response.data.items.map(item => item.track);
-        setTracks(trackList);
-        setCurrentTrack(trackList[0]);
-        
-        setCurrentTrackIndex(0);
+        dispatch(setTracks(trackList));
+        dispatch(setCurrentTrack(trackList[0]));
         setSelectedPlaylist(playlists.find(playlist => playlist.id === playlistId));
       } else {
         console.error('Unexpected response structure for tracks:', response.data);
@@ -74,70 +67,39 @@ const TopPlaylistPage = () => {
     }
   };
 
-  // const handlePlay = (track, index) => {
-  //   setCurrentTrack(track);
-  //   setCurrentTrackIndex(index);
-  //   setWaveformActive(true);
-
-  //   // Save the recently played track to localStorage
-  //   const currentHistory = JSON.parse(localStorage.getItem('recentTracks')) || [];
-  //   const trackExists = currentHistory.some(existingTrack => existingTrack.id === track.id);
-  //   if (!trackExists) {
-  //     const updatedHistory = [track, ...currentHistory].slice(0, 10);
-  //     localStorage.setItem('recentTracks', JSON.stringify(updatedHistory));
-  //   }
-  // };
-
-   const handlePlay = async (track, index) => {
-    setCurrentTrack(track);
-    setCurrentTrackIndex(index);
-    setWaveformActive(true);
-console.log(track);
-    try {
-      await axios.post('https://music-app-zhkf.onrender.com/api/history', {
-        trackId: track.id,
-        trackName: track.name,
-        artistNames: track.artists.map(artist => artist.name),
-        albumName: track.album.name,
-        albumImageUrl: track.album.images[0]?.url || '',
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store the token in localStorage
-        },
-      });
-    } catch (error) {
-      console.error('Error saving track to history:', error);
-    }
+  const handlePlay = async (track, index) => {
+    dispatch(setCurrentTrack(track));
+    
+    
   };
 
   const handleTrackEnded = () => {
-    setWaveformActive(false);
-    if (currentTrackIndex !== null && currentTrackIndex < tracks.length - 1) {
+   
+    const currentTrackIndex = tracks.findIndex(track => track.id === currentTrack?.id);
+    if (currentTrackIndex !== -1 && currentTrackIndex < tracks.length - 1) {
       const nextTrackIndex = currentTrackIndex + 1;
-      setCurrentTrack(tracks[nextTrackIndex]);
-      setCurrentTrackIndex(nextTrackIndex);
-      setWaveformActive(true);
+      dispatch(setCurrentTrack(tracks[nextTrackIndex]));
+     
     } else {
-      setCurrentTrack(null);
-      setCurrentTrackIndex(null);
+      dispatch(clearCurrentTrack());
     }
   };
 
   const handlePreviousTrack = () => {
-    if (currentTrackIndex !== null && currentTrackIndex > 0) {
+    const currentTrackIndex = tracks.findIndex(track => track.id === currentTrack?.id);
+    if (currentTrackIndex !== -1 && currentTrackIndex > 0) {
       const prevTrackIndex = currentTrackIndex - 1;
-      setCurrentTrack(tracks[prevTrackIndex]);
-      setCurrentTrackIndex(prevTrackIndex);
-      setWaveformActive(true);
+      dispatch(setCurrentTrack(tracks[prevTrackIndex]));
+     
     }
   };
 
   const handleNextTrack = () => {
-    if (currentTrackIndex !== null && currentTrackIndex < tracks.length - 1) {
+    const currentTrackIndex = tracks.findIndex(track => track.id === currentTrack?.id);
+    if (currentTrackIndex !== -1 && currentTrackIndex < tracks.length - 1) {
       const nextTrackIndex = currentTrackIndex + 1;
-      setCurrentTrack(tracks[nextTrackIndex]);
-      setCurrentTrackIndex(nextTrackIndex);
-      setWaveformActive(true);
+      dispatch(setCurrentTrack(tracks[nextTrackIndex]));
+      
     }
   };
 
@@ -221,7 +183,7 @@ console.log(track);
                             backgroundColor: currentTrack && currentTrack.id === track.id ? '#1976d2' : '#ccc',
                           }}
                         >
-                          {currentTrack && currentTrack.id === track.id && waveformActive ? (
+                          {currentTrack && currentTrack.id === track.id ? (
                             <Box className="waveform-container" sx={{ padding: '10px' }}>
                               <Box className="waveform-bar" />
                               <Box className="waveform-bar" />
@@ -238,6 +200,7 @@ console.log(track);
                   ) : null
                 ))}
               </Grid>
+              
             </Box>
           ) : (
             <Grid container spacing={2}>
@@ -267,52 +230,15 @@ console.log(track);
               ))}
             </Grid>
           )}
-
-          {currentTrack && (
-            <Box sx={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              padding: '10px 20px',
-              zIndex: 9999
-            }}>
-             <img src={currentTrack.album.images[0].url} alt={currentTrack.name} style={{ width: '100px', height: '100px', borderRadius: '8px', marginRight: '10px' }} />
-   
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="h6">{currentTrack.name}</Typography>
-                <Typography variant="subtitle1">By: {currentTrack.artists.map(artist => artist.name).join(', ')}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 600 }}>
-                <IconButton onClick={handlePreviousTrack} sx={{ color: 'white', fontSize: '2rem' }}>
-                  <SkipPreviousIcon fontSize="inherit" />
-                </IconButton>
-                <Box sx={{ flexGrow: 1 }}>
-                  <AudioPlayer
-                  autoPlay
-                    src={currentTrack.preview_url}
-                    showSkipControls={false}
-                    showJumpControls={false}
-                    onEnded={handleTrackEnded}
-                    onPlay={() => setWaveformActive(true)}
-                    onPause={() => setWaveformActive(false)}
-                    style={{ width: '100%', borderRadius: '8px', backgroundColor: '#fff' }}
-                  />
-                </Box>
-                <IconButton onClick={handleNextTrack} sx={{ color: 'white', fontSize: '2rem' }}>
-                  <SkipNextIcon fontSize="inherit" />
-                </IconButton>
-              </Box>
-            </Box>
-          )}
         </>
       )}
     </Box>
   );
+};
+
+// Helper function to truncate text
+const truncateText = (text, maxLength) => {
+  return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 };
 
 export default TopPlaylistPage;

@@ -18,6 +18,9 @@ import TopPlaylistPage from './pages/TopPlaylistPage';
 import SearchPage from './pages/SearchPage';
 import HistoryPage from './pages/HistoryPage';
 import AllCategoriesPage from './pages/AllCategoriesPage';
+import Player from './components/Player'; // Import the Player component
+import store from './redux/store'; 
+import { Provider } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -25,6 +28,7 @@ function App() {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token') || '');
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   const setToken = (token) => {
     setAuthToken(token);
@@ -37,8 +41,6 @@ function App() {
     window.location.href = '/login';
   };
 
-  const navigate = useNavigate();
-
   const handleSearch = (event) => {
     event.preventDefault();
     if (searchQuery.trim() !== '') {
@@ -46,21 +48,18 @@ function App() {
     }
   };
 
-  // Determine whether to show the AppBar and Sidebar
   const showTopBarAndSidebar = !['/login', '/register'].includes(location.pathname);
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <CssBaseline />
       {showTopBarAndSidebar && <Sidebar logout={logout} />}
-      <Box
-        component="main"
-        sx={{
+      <Box component="main" sx={{
           flexGrow: 1,
           bgcolor: 'background.default',
-         
-        }}
-      >
+          marginLeft: showTopBarAndSidebar ? `${drawerWidth}px` : '0',
+          transition: 'margin-left 0.3s',
+        }}>
         {showTopBarAndSidebar && (
           <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar>
@@ -85,9 +84,7 @@ function App() {
                       </InputAdornment>
                     ),
                   }}
-                  sx={{ width: '50%',
-                    minWidth: '200px',
-                    maxWidth: '400px', margin:'0 auto', bgcolor: 'background.paper', borderRadius: 1 }}
+                  sx={{ width: '50%', minWidth: '200px', maxWidth: '400px', margin: '0 auto', bgcolor: 'background.paper', borderRadius: 1 }}
                 />
               </Box>
               {authToken ? (
@@ -115,33 +112,35 @@ function App() {
           </AppBar>
         )}
         {showTopBarAndSidebar && <Toolbar />}
-        <Routes sx={{
-          flexGrow: 1,
-          bgcolor: 'background.default',
-          p: 3,
-        }}>
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/login" element={<LoginForm setAuthToken={setToken} />} />
-          <Route path="/users/list" element={<PrivateRoute authToken={authToken} component={UserList} />} />
-          <Route path="/users/new" element={<PrivateRoute authToken={authToken} component={CreateUserForm} />} />
-          <Route path="/" element={<MusicPage />} />
-          <Route path="/:category" element={<CategoryWiseMusicPage />} />
-          <Route path="/top-charts" element={<TopChartsPage />} />
-          <Route path="/top-playlists" element={<TopPlaylistPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/history" element={<PrivateRoute authToken={authToken} component={HistoryPage} />} />
-          <Route path="/music/all-cat" element={<AllCategoriesPage />} />
-        </Routes>
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+          <Routes>
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/login" element={<LoginForm setAuthToken={setToken} />} />
+            <Route path="/users/list" element={<PrivateRoute authToken={authToken} component={UserList} />} />
+            <Route path="/users/new" element={<PrivateRoute authToken={authToken} component={CreateUserForm} />} />
+            <Route path="/" element={<MusicPage />} />
+            <Route path="/:category" element={<CategoryWiseMusicPage />} />
+            <Route path="/top-charts" element={<TopChartsPage />} />
+            <Route path="/top-playlists" element={<TopPlaylistPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/history" element={<PrivateRoute authToken={authToken} component={HistoryPage} />} />
+            <Route path="/music/all-cat" element={<AllCategoriesPage />} />
+          </Routes>
+        </Box>
       </Box>
+      {/* Always show the Player component at the bottom */}
+      <Player />
     </Box>
   );
 }
 
 function AppWrapper() {
   return (
-    <Router>
-      <App />
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <App />
+      </Router>
+    </Provider>
   );
 }
 
