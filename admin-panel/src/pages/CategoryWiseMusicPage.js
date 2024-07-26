@@ -20,6 +20,7 @@ const CategoryWiseMusicPage = () => {
   const { category } = useParams();
   const dispatch = useDispatch();
   const currentTrack = useSelector((state) => state.music.currentTrack);
+  console.log(currentTrack);
   const tracks = useSelector((state) => state.music.tracks);
   const [playerVisible, setPlayerVisible] = useState(false);
 
@@ -44,17 +45,7 @@ const CategoryWiseMusicPage = () => {
     dispatch(setCurrentTrack(track));
     // Save the recently played track to localStorage
     try {
-      await axios.post('https://music-app-zhkf.onrender.com/api/history', {
-        trackId: track.id,
-        trackName: track.name,
-        artistNames: track.artists.map(artist => artist.name),
-        albumName: track.album.name,
-        albumImageUrl: track.album.images[0]?.url || '',
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store the token in localStorage
-        },
-      });
+      
     } catch (error) {
       console.error('Error saving track to history:', error);
     }
@@ -113,35 +104,7 @@ const CategoryWiseMusicPage = () => {
           ) : null
         ))}
       </Grid>
-      {playerVisible && currentTrack && (
-        <Box sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '10px 20px',
-          zIndex: 9999
-        }}>
-          <img src={currentTrack.album.images[0].url} alt={currentTrack.name} style={{ width: '100px', height: '100px', borderRadius: '8px', marginRight: '10px' }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h6">{currentTrack.name}</Typography>
-            <Typography variant="subtitle1">By: {currentTrack.artists.map(artist_cur => artist_cur.name).join(', ')}</Typography>
-          </Box>
-          <Box sx={{ width: '100%', maxWidth: 600 }}>
-            <AudioPlayer
-              autoPlay
-              src={currentTrack.preview_url}
-              showSkipControls
-              showJumpControls={false}
-              style={{ width: '100%', borderRadius: '8px', backgroundColor: '#fff' }}
-            />
-          </Box>
-        </Box>
-      )}
+     
     </Box>
   );
 };

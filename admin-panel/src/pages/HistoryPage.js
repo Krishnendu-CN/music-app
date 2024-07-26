@@ -163,43 +163,7 @@ const HistoryPage = () => {
         </Typography>
       )}
 
-      {currentTrack && (
-        <Box sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '10px 20px',
-          zIndex: 9999
-        }}>
-        <img src={currentTrack.albumImageUrl} alt={currentTrack.trackName} style={{ width: '100px', height: '100px', borderRadius: '8px', marginRight: '10px' }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h6">{currentTrack.trackName}</Typography>
-            <Typography variant="subtitle1">By: {currentTrack.artistNames.join(', ')}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: 600 }}>
-            <IconButton onClick={handlePreviousTrack} sx={{ color: 'white', fontSize: '2rem' }}>
-              <SkipPreviousIcon fontSize="inherit" />
-            </IconButton>
-            <Box sx={{ flexGrow: 1 }}>
-              <AudioPlayer
-                src={currentTrack.preview_url}
-                showSkipControls={false} // Hide the default skip controls
-                showJumpControls={false}
-                onEnded={handleTrackEnded} // Handle track end event
-                style={{ width: '100%', borderRadius: '8px', backgroundColor: '#fff' }}
-              />
-            </Box>
-            <IconButton onClick={handleNextTrack} sx={{ color: 'white', fontSize: '2rem' }}>
-              <SkipNextIcon fontSize="inherit" />
-            </IconButton>
-          </Box>
-        </Box>
-      )}
+      
     </Box>
   );
 };
