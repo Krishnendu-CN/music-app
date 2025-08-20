@@ -101,10 +101,10 @@ app.get('/api/category/:categoryId', async (req, res) => {
       }
     });
 
-    console.log(response);
+    
 
-    const playlists = response.data.playlists.items;
-
+    const playlists = response.data.items;
+    console.log(playlists);
     // Fetch tracks for each playlist
     const playlistsWithTracks = await Promise.all(playlists.map(async (playlist) => {
       const tracksResponse = await axios.get(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
