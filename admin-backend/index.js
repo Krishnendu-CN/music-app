@@ -87,43 +87,52 @@ app.get('/api/search', async (req, res) => {
 
 // Spotify category route
 // index.js
+// Spotify new releases route (maintaining the same response structure)
 app.get('/api/category/:categoryId', async (req, res) => {
   const { categoryId } = req.params;
 
   try {
     const accessToken = await getSpotifyAccessToken();
 
-    // Get playlists for the category
-    const response = await axios.get(`https://api.spotify.com/v1/browse/new-releases`, {
+    // Get new releases from Spotify API
+    const response = await axios.get('https://api.spotify.com/v1/browse/new-releases', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
+      },
+      params: {
+        limit: 20 // Number of new releases to fetch
       }
     });
 
+    const newReleases = response.data.albums.items;
+    console.log(newReleases);
     
-
-    const playlists = response.data.items;
-    console.log(playlists);
-    // Fetch tracks for each playlist
-    const playlistsWithTracks = await Promise.all(playlists.map(async (playlist) => {
-      const tracksResponse = await axios.get(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
+    // Format the response to match your current structure (playlists with tracks)
+    // Since new releases are albums, we'll treat each album as a "playlist" with its tracks
+    const albumsWithTracks = await Promise.all(newReleases.map(async (album) => {
+      // Get the tracks for each album
+      const tracksResponse = await axios.get(`https://api.spotify.com/v1/albums/${album.id}/tracks`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json'
         }
       });
+      
       return {
-        id: playlist.id,
-        name: playlist.name,
-        tracks: tracksResponse.data.items.map(item => item.track) // Ensure tracks is an array
+        id: album.id,
+        name: album.name,
+        // Include album image for consistency with your frontend if needed
+        images: album.images,
+        // Format tracks to match your current response structure
+        tracks: tracksResponse.data.items
       };
     }));
 
-    res.json(playlistsWithTracks); // Return playlists with tracks from Spotify API
+    res.json(albumsWithTracks); // Return albums with tracks in the same format as before
   } catch (error) {
-    //console.error('Error fetching playlists from Spotify:', error);
-    res.status(500).json({ error: 'Failed to fetch playlists from Spotify' });
+    console.error('Error fetching new releases from Spotify:', error);
+    res.status(500).json({ error: 'Failed to fetch new releases from Spotify' });
   }
 });
 
