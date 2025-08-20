@@ -94,12 +94,14 @@ app.get('/api/category/:categoryId', async (req, res) => {
     const accessToken = await getSpotifyAccessToken();
 
     // Get playlists for the category
-    const response = await axios.get(`https://api.spotify.com/v1/browse/categories/${categoryId}/playlists`, {
+    const response = await axios.get(`https://api.spotify.com/v1/browse/new-releases`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       }
     });
+
+    console.log(response);
 
     const playlists = response.data.playlists.items;
 
